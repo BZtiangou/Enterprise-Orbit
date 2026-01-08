@@ -1,21 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"Enterprise-Orbit/internal/config"
-	"Enterprise-Orbit/pkg/database"
-	"Enterprise-Orbit/pkg/logger"
+
+	"enterprise-orbit/configs"
+	"enterprise-orbit/internal/api/routes"
+	"enterprise-orbit/internal/pkg/database"
+	"enterprise-orbit/internal/pkg/logger"
+	"enterprise-orbit/pkg/auth"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// 加载配置
-	cfg, err := config.LoadConfig("./config.yaml")
+	cfg, err := configs.LoadConfig("./configs/config.yaml")
 	if err != nil {
 		log.Fatal("Cannot load config:", err)
 	}
 
+	// 初始化 JWT secret
+	auth.LoadJWTSecret(cfg.JWT.Secret)
+
 	// 初始化日志
-	if err := logger.InitLogger(cfg); err != nil {
+	if err := logger.Init(cfg); err != nil {
 		log.Fatal("Cannot initialize logger:", err)
 	}
 
@@ -30,11 +39,30 @@ func main() {
 		log.Fatal("Cannot migrate database:", err)
 	}
 
-	// 启动HTTP服务器
-	startServer(cfg, db)
-}
+	// 初始化RBAC数据
+	if err := database.InitRBACData(db); err != nil {
+		log.Fatal("Cannot initialize RBAC data:", err)
+	}
 
-func startServer(cfg *config.Config, db *gorm.DB) {
-	// 这里将初始化Gin路由和中间件
-	log.Printf("Starting %s server on port %d", cfg.Server.Name, cfg.Server.Port)
+	// 初始化Gin
+	if cfg.Server.Env == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	r := gin.Default()
+
+	// 注入数据库连接
+	r.Use(func(c *gin.Context) {
+		c.Set("db", db)
+		c.Next()
+	})
+
+	// 设置路由
+	routes.SetupRoutes(r, db)
+
+	// 启动服务器
+	log.Printf("Starting enterprise-orbit server on :%d", cfg.Server.Port)
+	if err := r.Run(":" + fmt.Sprintf("%d", cfg.Server.Port)); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
 }

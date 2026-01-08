@@ -1,0 +1,26 @@
+server:
+  port: 8080
+  env: development
+  name: enterprise-orbit
+
+database:
+  host: 127.0.0.1
+  port: 5432
+  user: postgres
+  password: root
+  dbname: enterprise_orbit
+  sslmode: disable
+
+jwt:
+  secret: enterprise-orbit-jwt-secret-key-2024
+  expires: 24h
+
+redis:
+  host: 172.17.45.129
+  port: 6379
+  password: ""
+  db: 0
+
+log:
+  level: debug
+  format: json

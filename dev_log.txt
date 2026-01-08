@@ -1,7 +1,11 @@
 2025-12-4 create dev_log and make plan
 2025-12-4 to 2025-12-8 find and read literature review
 
-https://ieeexplore.ieee.org/document/10547752   golang 单体应用 to 微服务
-https://ieeexplore.ieee.org/document/11234495   
+https://ieeexplore.ieee.org/document/10547752
+The microservice architecture has gradually become the mainstream software design paradigm in the cloud-native era. 
+When the complexity of business increases, traditional monolithic applications often encounter challenges 
+such as deployment difficulties, poor scalability, and rigid technology stacks. Reconstructing monolithic applications into microservices can enhance the maintainability, independent deployment capabilities, and technical diversity of the system, but it also introduces new issues such as service splitting, data consistency, and operational complexity. Therefore, exploring efficient and reliable reconfiguration methods and technical support has significant theoretical and practical value.
 
+https://ieeexplore.ieee.org/document/11234495
+RBAC
 
