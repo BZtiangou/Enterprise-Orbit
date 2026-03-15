@@ -7,6 +7,10 @@
       <div class="gradient-orb orb-3"></div>
     </div>
     
+    <div class="lang-switch-wrapper">
+      <LangSwitch />
+    </div>
+    
     <div class="auth-content">
       <div class="auth-card glass" :class="{ 'flipped': isRegister }">
         <div class="auth-form-container">
@@ -30,7 +34,7 @@
               </div>
             </div>
             <h1 class="auth-title">Enterprise Orbit</h1>
-            <p class="auth-subtitle">B2B 关系管理系统</p>
+            <p class="auth-subtitle">{{ $t('auth.loginTitle') }}</p>
           </div>
 
           <transition name="fade" mode="out-in">
@@ -39,7 +43,7 @@
                 <el-form-item prop="username">
                   <el-input
                     v-model="loginForm.username"
-                    placeholder="用户名"
+                    :placeholder="$t('auth.username')"
                     size="large"
                     :prefix-icon="User"
                   />
@@ -48,7 +52,7 @@
                   <el-input
                     v-model="loginForm.password"
                     type="password"
-                    placeholder="密码"
+                    :placeholder="$t('auth.password')"
                     size="large"
                     :prefix-icon="Lock"
                     show-password
@@ -63,15 +67,15 @@
                     @click="handleLogin"
                     class="auth-button"
                   >
-                    <span v-if="!loading">登录系统</span>
-                    <span v-else>正在验证...</span>
+                    <span v-if="!loading">{{ $t('auth.login') }}</span>
+                    <span v-else>{{ $t('auth.verifying') }}</span>
                   </el-button>
                 </el-form-item>
               </el-form>
               
               <div class="auth-footer">
-                <span class="auth-footer-text">还没有账号？</span>
-                <a class="auth-link" @click="toggleMode">立即注册</a>
+                <span class="auth-footer-text">{{ $t('auth.noAccount') }}</span>
+                <a class="auth-link" @click="toggleMode">{{ $t('auth.registerNow') }}</a>
               </div>
             </div>
 
@@ -80,7 +84,7 @@
                 <el-form-item prop="username">
                   <el-input
                     v-model="registerForm.username"
-                    placeholder="用户名"
+                    :placeholder="$t('auth.username')"
                     size="large"
                     :prefix-icon="User"
                   />
@@ -88,7 +92,7 @@
                 <el-form-item prop="email">
                   <el-input
                     v-model="registerForm.email"
-                    placeholder="邮箱地址"
+                    :placeholder="$t('auth.email')"
                     size="large"
                     :prefix-icon="Message"
                   />
@@ -97,7 +101,7 @@
                   <el-input
                     v-model="registerForm.password"
                     type="password"
-                    placeholder="设置密码（至少6位）"
+                    :placeholder="$t('auth.password')"
                     size="large"
                     :prefix-icon="Lock"
                     show-password
@@ -107,7 +111,7 @@
                   <el-input
                     v-model="registerForm.confirmPassword"
                     type="password"
-                    placeholder="确认密码"
+                    :placeholder="$t('auth.confirmPassword')"
                     size="large"
                     :prefix-icon="Lock"
                     show-password
@@ -122,15 +126,15 @@
                     @click="handleRegister"
                     class="auth-button"
                   >
-                    <span v-if="!loading">创建账号</span>
-                    <span v-else>正在创建...</span>
+                    <span v-if="!loading">{{ $t('auth.register') }}</span>
+                    <span v-else>{{ $t('auth.creating') }}</span>
                   </el-button>
                 </el-form-item>
               </el-form>
               
               <div class="auth-footer">
-                <span class="auth-footer-text">已有账号？</span>
-                <a class="auth-link" @click="toggleMode">返回登录</a>
+                <span class="auth-footer-text">{{ $t('auth.hasAccount') }}</span>
+                <a class="auth-link" @click="toggleMode">{{ $t('auth.backToLogin') }}</a>
               </div>
             </div>
           </transition>
@@ -140,13 +144,10 @@
       <div class="auth-info">
         <div class="info-content">
           <h2 class="info-title">
-            <span class="gradient-text">智能化的</span>
-            <br />
-            企业关系管理
+            <span class="gradient-text">{{ $t('dashboard.title') }}</span>
           </h2>
           <p class="info-description">
-            基于社会交换理论与动态能力理论，构建信任、互惠、承诺三维健康度评估模型，
-            助力企业实现客户关系的精细化运营与价值最大化。
+            {{ $t('dashboard.subtitle') }}
           </p>
           <div class="features-grid">
             <div class="feature-item">
@@ -154,8 +155,8 @@
                 <el-icon :size="24"><User /></el-icon>
               </div>
               <div class="feature-text">
-                <h4>客户全景档案</h4>
-                <p>360°客户视图</p>
+                <h4>{{ $t('nav.customers') }}</h4>
+                <p>360° {{ $t('customer.basicInfo') }}</p>
               </div>
             </div>
             <div class="feature-item">
@@ -163,8 +164,8 @@
                 <el-icon :size="24"><Document /></el-icon>
               </div>
               <div class="feature-text">
-                <h4>智能合同管理</h4>
-                <p>全生命周期追踪</p>
+                <h4>{{ $t('nav.contracts') }}</h4>
+                <p>{{ $t('contract.performanceRecords') }}</p>
               </div>
             </div>
             <div class="feature-item">
@@ -172,8 +173,8 @@
                 <el-icon :size="24"><ChatDotRound /></el-icon>
               </div>
               <div class="feature-text">
-                <h4>互动日志分析</h4>
-                <p>知识智能提取</p>
+                <h4>{{ $t('nav.interactions') }}</h4>
+                <p>{{ $t('interaction.contentSummary') }}</p>
               </div>
             </div>
             <div class="feature-item">
@@ -181,8 +182,8 @@
                 <el-icon :size="24"><Odometer /></el-icon>
               </div>
               <div class="feature-text">
-                <h4>数据驱动决策</h4>
-                <p>可视化仪表盘</p>
+                <h4>{{ $t('nav.dashboard') }}</h4>
+                <p>{{ $t('dashboard.customerGrowth') }}</p>
               </div>
             </div>
           </div>
@@ -193,13 +194,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { User, Lock, Message, Document, ChatDotRound, Odometer } from '@element-plus/icons-vue'
 import { useUserStore } from '../../stores/user'
 import { authApi } from '../../api'
+import LangSwitch from '../../components/LangSwitch.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const loginFormRef = ref()
@@ -221,35 +225,35 @@ const registerForm = reactive({
 
 const validateConfirmPassword = (_rule: any, value: string, callback: any) => {
   if (value !== registerForm.password) {
-    callback(new Error('两次输入的密码不一致'))
+    callback(new Error(t('auth.passwordMismatch')))
   } else {
     callback()
   }
 }
 
-const loginRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
-}
+const loginRules = computed(() => ({
+  username: [{ required: true, message: t('auth.usernameRequired'), trigger: 'blur' }],
+  password: [{ required: true, message: t('auth.passwordRequired'), trigger: 'blur' }]
+}))
 
-const registerRules = {
+const registerRules = computed(() => ({
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    { required: true, message: t('auth.usernameRequired'), trigger: 'blur' },
+    { min: 3, max: 20, message: t('auth.usernameLength'), trigger: 'blur' }
   ],
   email: [
-    { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+    { required: true, message: t('auth.emailRequired'), trigger: 'blur' },
+    { type: 'email', message: t('auth.emailFormat'), trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于 6 个字符', trigger: 'blur' }
+    { required: true, message: t('auth.passwordRequired'), trigger: 'blur' },
+    { min: 6, message: t('auth.passwordLength'), trigger: 'blur' }
   ],
   confirmPassword: [
-    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    { required: true, message: t('auth.confirmPasswordRequired'), trigger: 'blur' },
     { validator: validateConfirmPassword, trigger: 'blur' }
   ]
-}
+}))
 
 const toggleMode = () => {
   isRegister.value = !isRegister.value
@@ -260,10 +264,10 @@ const handleLogin = async () => {
   loading.value = true
   try {
     await userStore.login(loginForm.username, loginForm.password)
-    ElMessage.success('登录成功，欢迎回来！')
+    ElMessage.success(t('auth.loginSuccess'))
     router.push('/dashboard')
   } catch (error: any) {
-    ElMessage.error(error.response?.data?.error || '登录失败，请检查用户名和密码')
+    ElMessage.error(error.response?.data?.error || t('auth.loginFailed'))
   } finally {
     loading.value = false
   }
@@ -278,11 +282,11 @@ const handleRegister = async () => {
       email: registerForm.email,
       password: registerForm.password
     })
-    ElMessage.success('注册成功！请登录')
+    ElMessage.success(t('auth.registerSuccess'))
     isRegister.value = false
     loginForm.username = registerForm.username
   } catch (error: any) {
-    ElMessage.error(error.response?.data?.error || '注册失败，请稍后重试')
+    ElMessage.error(error.response?.data?.error || t('auth.registerFailed'))
   } finally {
     loading.value = false
   }
@@ -361,6 +365,13 @@ const handleRegister = async () => {
   0%, 100% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(30px, -30px) scale(1.1); }
   66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+.lang-switch-wrapper {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
 }
 
 .auth-content {

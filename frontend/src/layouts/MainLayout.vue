@@ -28,42 +28,42 @@
       
       <nav class="sidebar-nav">
         <div class="nav-section">
-          <span class="nav-section-title">主菜单</span>
+          <span class="nav-section-title">{{ $t('nav.mainMenu') }}</span>
           <ul class="nav-list">
             <li>
               <router-link to="/dashboard" class="nav-item" :class="{ active: activeMenu === '/dashboard' }">
                 <el-icon class="nav-icon"><Odometer /></el-icon>
-                <span class="nav-text">仪表盘</span>
+                <span class="nav-text">{{ $t('nav.dashboard') }}</span>
               </router-link>
             </li>
             <li>
               <router-link to="/customers" class="nav-item" :class="{ active: activeMenu.startsWith('/customers') }">
                 <el-icon class="nav-icon"><User /></el-icon>
-                <span class="nav-text">客户管理</span>
+                <span class="nav-text">{{ $t('nav.customers') }}</span>
               </router-link>
             </li>
             <li>
               <router-link to="/contracts" class="nav-item" :class="{ active: activeMenu.startsWith('/contracts') }">
                 <el-icon class="nav-icon"><Document /></el-icon>
-                <span class="nav-text">合同管理</span>
+                <span class="nav-text">{{ $t('nav.contracts') }}</span>
               </router-link>
             </li>
             <li>
               <router-link to="/interactions" class="nav-item" :class="{ active: activeMenu === '/interactions' }">
                 <el-icon class="nav-icon"><ChatDotRound /></el-icon>
-                <span class="nav-text">互动日志</span>
+                <span class="nav-text">{{ $t('nav.interactions') }}</span>
               </router-link>
             </li>
           </ul>
         </div>
         
         <div class="nav-section">
-          <span class="nav-section-title">系统设置</span>
+          <span class="nav-section-title">{{ $t('nav.systemSettings') }}</span>
           <ul class="nav-list">
             <li>
               <router-link to="/users" class="nav-item" :class="{ active: activeMenu === '/users' }">
                 <el-icon class="nav-icon"><UserFilled /></el-icon>
-                <span class="nav-text">用户管理</span>
+                <span class="nav-text">{{ $t('nav.users') }}</span>
               </router-link>
             </li>
           </ul>
@@ -76,16 +76,16 @@
             <el-icon :size="20"><UserFilled /></el-icon>
           </div>
           <div class="user-details">
-            <span class="user-name">管理员</span>
-            <span class="user-role">系统管理员</span>
+            <span class="user-name">{{ $t('nav.profile') }}</span>
+            <span class="user-role">{{ $t('nav.systemSettings') }}</span>
           </div>
           <el-dropdown trigger="click" @command="handleCommand">
             <el-icon class="user-menu-icon"><ArrowDown /></el-icon>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                <el-dropdown-item command="settings">系统设置</el-dropdown-item>
-                <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+                <el-dropdown-item command="profile">{{ $t('nav.profile') }}</el-dropdown-item>
+                <el-dropdown-item command="settings">{{ $t('nav.settings') }}</el-dropdown-item>
+                <el-dropdown-item divided command="logout">{{ $t('auth.logout') }}</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -97,11 +97,12 @@
       <header class="header">
         <div class="header-left">
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item v-if="currentTitle !== '仪表盘'">{{ currentTitle }}</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/' }">{{ $t('nav.dashboard') }}</el-breadcrumb-item>
+            <el-breadcrumb-item v-if="currentTitle !== $t('nav.dashboard')">{{ currentTitle }}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <div class="header-right">
+          <LangSwitch />
           <div class="header-actions">
             <el-badge :value="notifications" :max="99" class="notification-badge">
               <el-button :icon="Bell" circle />
@@ -124,16 +125,19 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '../stores/user'
 import { Odometer, User, Document, ChatDotRound, UserFilled, ArrowDown, Bell } from '@element-plus/icons-vue'
+import LangSwitch from '../components/LangSwitch.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const notifications = ref(3)
 
 const activeMenu = computed(() => route.path)
-const currentTitle = computed(() => route.meta.title as string || '仪表盘')
+const currentTitle = computed(() => route.meta.title as string || t('nav.dashboard'))
 
 const handleCommand = (command: string) => {
   if (command === 'logout') {

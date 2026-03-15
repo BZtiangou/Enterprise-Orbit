@@ -2,16 +2,16 @@
   <div class="dashboard">
     <div class="page-header">
       <div class="page-title">
-        <h1>数据仪表盘</h1>
-        <p>企业关系管理核心指标概览</p>
+        <h1>{{ $t('dashboard.title') }}</h1>
+        <p>{{ $t('dashboard.subtitle') }}</p>
       </div>
       <div class="page-actions">
         <el-date-picker
           v-model="dateRange"
           type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+          :range-separator="$t('common.search')"
+          :start-placeholder="$t('contract.startDate')"
+          :end-placeholder="$t('contract.endDate')"
           size="default"
         />
       </div>
@@ -30,7 +30,7 @@
         </div>
         <div class="stat-trend" v-if="item.trend">
           <el-icon :class="item.trend > 0 ? 'trend-up' : 'trend-down'">
-            <component :is="item.trend > 0 ? 'Top' : 'Bottom'" />
+            <component :is="item.trend > 0 ? trendIcons.Top : trendIcons.Bottom" />
           </el-icon>
           <span :class="item.trend > 0 ? 'trend-up' : 'trend-down'">
             {{ Math.abs(item.trend) }}%
@@ -42,17 +42,17 @@
     <div class="charts-row">
       <div class="chart-card chart-large">
         <div class="chart-header">
-          <h3>客户增长趋势</h3>
+          <h3>{{ $t('dashboard.customerGrowth') }}</h3>
           <div class="chart-legend">
-            <span class="legend-item"><i class="legend-dot primary"></i>新增客户</span>
-            <span class="legend-item"><i class="legend-dot secondary"></i>累计客户</span>
+            <span class="legend-item"><i class="legend-dot primary"></i>{{ $t('dashboard.newCustomers') }}</span>
+            <span class="legend-item"><i class="legend-dot secondary"></i>{{ $t('dashboard.totalCustomersCount') }}</span>
           </div>
         </div>
         <div ref="customerChartRef" class="chart-container"></div>
       </div>
       <div class="chart-card chart-small">
         <div class="chart-header">
-          <h3>合同价值分布</h3>
+          <h3>{{ $t('dashboard.contractDistribution') }}</h3>
         </div>
         <div ref="contractChartRef" class="chart-container"></div>
       </div>
@@ -61,8 +61,8 @@
     <div class="data-row">
       <div class="data-card">
         <div class="card-header">
-          <h3>续约风险预警</h3>
-          <el-button type="primary" link>查看全部</el-button>
+          <h3>{{ $t('dashboard.renewalAlerts') }}</h3>
+          <el-button type="primary" link>{{ $t('dashboard.viewAll') }}</el-button>
         </div>
         <div class="alert-list">
           <div v-for="item in renewalAlerts" :key="item.id" class="alert-item">
@@ -72,7 +72,7 @@
             <div class="alert-content">
               <div class="alert-title">{{ item.contract_no }} - {{ item.customer_name }}</div>
               <div class="alert-meta">
-                <span class="alert-date">剩余 {{ item.days_until_expiry }} 天</span>
+                <span class="alert-date">{{ $t('dashboard.daysRemaining') }} {{ item.days_until_expiry }} {{ $t('dashboard.days') }}</span>
                 <el-tag :type="getRiskType(item.days_until_expiry)" size="small">
                   {{ getRiskLabel(item.days_until_expiry) }}
                 </el-tag>
@@ -81,15 +81,15 @@
           </div>
           <div v-if="renewalAlerts.length === 0" class="empty-state">
             <el-icon :size="32"><CircleCheck /></el-icon>
-            <p>暂无续约风险</p>
+            <p>{{ $t('dashboard.noRenewalRisk') }}</p>
           </div>
         </div>
       </div>
 
       <div class="data-card">
         <div class="card-header">
-          <h3>TOP 客户</h3>
-          <el-button type="primary" link>查看全部</el-button>
+          <h3>{{ $t('dashboard.topCustomers') }}</h3>
+          <el-button type="primary" link>{{ $t('dashboard.viewAll') }}</el-button>
         </div>
         <div class="top-customer-list">
           <div v-for="(item, index) in topCustomers" :key="item.id" class="customer-item">
@@ -97,7 +97,7 @@
             <div class="customer-info">
               <div class="customer-name">{{ item.customer_name }}</div>
               <div class="customer-meta">
-                <span>{{ item.total_contracts }} 份合同</span>
+                <span>{{ item.total_contracts }} {{ $t('dashboard.contractsCount') }}</span>
                 <span>¥{{ formatNumber(item.total_value) }}</span>
               </div>
             </div>
@@ -113,7 +113,7 @@
           </div>
           <div v-if="topCustomers.length === 0" class="empty-state">
             <el-icon :size="32"><User /></el-icon>
-            <p>暂无客户数据</p>
+            <p>{{ $t('dashboard.noCustomerData') }}</p>
           </div>
         </div>
       </div>
@@ -122,11 +122,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import * as echarts from 'echarts'
+import { useI18n } from 'vue-i18n'
 import { dashboardApi } from '../../api'
 import { User, Document, ChatDotRound, Warning, CircleCheck, Top, Bottom } from '@element-plus/icons-vue'
 
+const { t } = useI18n()
 const customerChartRef = ref()
 const contractChartRef = ref()
 const overview = ref<any>({})
@@ -134,36 +136,38 @@ const renewalAlerts = ref<any[]>([])
 const topCustomers = ref<any[]>([])
 const dateRange = ref<[Date, Date] | null>(null)
 
-const statsCards = [
+const trendIcons = { Top, Bottom }
+
+const statsCards = computed(() => [
   { 
     key: 'total_customers', 
-    label: '总客户数', 
+    label: t('dashboard.totalCustomers'), 
     icon: User, 
     gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
     trend: 12
   },
   { 
     key: 'active_contracts', 
-    label: '在履约合同', 
+    label: t('dashboard.activeContracts'), 
     icon: Document, 
     gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
     trend: 8
   },
   { 
     key: 'monthly_interactions', 
-    label: '本月互动', 
+    label: t('dashboard.monthlyInteractions'), 
     icon: ChatDotRound, 
     gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     trend: -3
   },
   { 
     key: 'expiring_contracts', 
-    label: '待续约合同', 
+    label: t('dashboard.expiringContracts'), 
     icon: Warning, 
     gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
     trend: null
   }
-]
+])
 
 const formatNumber = (num: number) => {
   if (num >= 10000) {
@@ -185,9 +189,9 @@ const getRiskType = (days: number) => {
 }
 
 const getRiskLabel = (days: number) => {
-  if (days < 7) return '紧急'
-  if (days < 30) return '关注'
-  return '正常'
+  if (days < 7) return t('dashboard.urgent')
+  if (days < 30) return t('dashboard.attention')
+  return t('dashboard.normal')
 }
 
 const getHealthColor = (score: number) => {
@@ -257,7 +261,7 @@ const initCustomerChart = async () => {
       },
       series: [
         {
-          name: '新增客户',
+          name: t('dashboard.newCustomers'),
           type: 'bar',
           data: data.map((d: any) => d.new),
           itemStyle: {
@@ -269,7 +273,7 @@ const initCustomerChart = async () => {
           }
         },
         {
-          name: '累计客户',
+          name: t('dashboard.totalCustomersCount'),
           type: 'line',
           smooth: true,
           data: data.map((d: any) => d.total),

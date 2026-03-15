@@ -116,7 +116,7 @@ const resetPassword = async (user: any) => {
   ElMessage.success('密码已重置为默认密码')
 }
 
-const deleteUser = async (id: number) => {
+const deleteUser = async (_id: number) => {
   await ElMessageBox.confirm('确定要删除该用户吗？', '提示', { type: 'warning' })
   ElMessage.success('删除成功')
   loadUsers()
