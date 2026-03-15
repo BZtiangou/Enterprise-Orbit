@@ -14,13 +14,13 @@ import (
 )
 
 func main() {
-	// 加载配置
 	cfg, err := configs.LoadConfig("./configs/config.yaml")
 	if err != nil {
 		log.Fatal("Cannot load config:", err)
 	}
 
-	// 初始化 JWT secret
+	log.Printf("Database config: host=%s, port=%d, dbname=%s", cfg.Database.Host, cfg.Database.Port, cfg.Database.DBName)
+
 	auth.LoadJWTSecret(cfg.JWT.Secret)
 
 	// 初始化日志

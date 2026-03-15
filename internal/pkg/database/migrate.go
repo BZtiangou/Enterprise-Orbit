@@ -10,7 +10,7 @@ import (
 
 func AutoMigrate(db *gorm.DB) error {
 	log.Println("Starting database migration...")
-	
+
 	err := db.AutoMigrate(
 		&models.User{},
 		&models.Client{},
@@ -18,18 +18,33 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.Permission{},
 		&models.UserRole{},
 		&models.RolePermission{},
+		&models.Customer{},
+		&models.Contact{},
+		&models.OrgStructure{},
+		&models.CooperationHistory{},
+		&models.RelationshipHealth{},
+		&models.ContractTemplate{},
+		&models.Contract{},
+		&models.ContractContent{},
+		&models.ContractApprovalFlow{},
+		&models.ContractPerformance{},
+		&models.ContractRenewalPrediction{},
+		&models.InteractionLog{},
+		&models.InteractionAttachment{},
+		&models.InteractionTag{},
+		&models.KnowledgeExtract{},
 	)
 	if err != nil {
 		return err
 	}
-	
+
 	log.Println("Database migration completed successfully")
 	return nil
 }
 
 func InitRBACData(db *gorm.DB) error {
 	log.Println("Initializing RBAC data...")
-	
+
 	permissions := []models.Permission{
 		{Resource: "user", Action: "create", Description: "Create users"},
 		{Resource: "user", Action: "read", Description: "Read users"},
@@ -47,8 +62,22 @@ func InitRBACData(db *gorm.DB) error {
 		{Resource: "permission", Action: "read", Description: "Read permissions"},
 		{Resource: "permission", Action: "update", Description: "Update permissions"},
 		{Resource: "permission", Action: "delete", Description: "Delete permissions"},
+		{Resource: "customer", Action: "create", Description: "Create customers"},
+		{Resource: "customer", Action: "read", Description: "Read customers"},
+		{Resource: "customer", Action: "update", Description: "Update customers"},
+		{Resource: "customer", Action: "delete", Description: "Delete customers"},
+		{Resource: "contract", Action: "create", Description: "Create contracts"},
+		{Resource: "contract", Action: "read", Description: "Read contracts"},
+		{Resource: "contract", Action: "update", Description: "Update contracts"},
+		{Resource: "contract", Action: "delete", Description: "Delete contracts"},
+		{Resource: "contract", Action: "approve", Description: "Approve contracts"},
+		{Resource: "interaction", Action: "create", Description: "Create interactions"},
+		{Resource: "interaction", Action: "read", Description: "Read interactions"},
+		{Resource: "interaction", Action: "update", Description: "Update interactions"},
+		{Resource: "interaction", Action: "delete", Description: "Delete interactions"},
+		{Resource: "dashboard", Action: "read", Description: "View dashboard"},
 	}
-	
+
 	for _, perm := range permissions {
 		var existing models.Permission
 		result := db.Where("resource = ? AND action = ?", perm.Resource, perm.Action).First(&existing)
@@ -58,13 +87,13 @@ func InitRBACData(db *gorm.DB) error {
 			}
 		}
 	}
-	
+
 	roles := []models.Role{
 		{Name: "admin", Description: "Administrator with all permissions", Type: "static"},
 		{Name: "user", Description: "Regular user", Type: "static"},
 		{Name: "viewer", Description: "Read-only user", Type: "static"},
 	}
-	
+
 	for _, role := range roles {
 		var existing models.Role
 		result := db.Where("name = ?", role.Name).First(&existing)
@@ -74,12 +103,12 @@ func InitRBACData(db *gorm.DB) error {
 			}
 		}
 	}
-	
+
 	var adminRole models.Role
 	if err := db.Where("name = ?", "admin").First(&adminRole).Error; err == nil {
 		var adminPerms []models.Permission
 		db.Find(&adminPerms)
-		
+
 		for _, perm := range adminPerms {
 			var existing models.RolePermission
 			result := db.Where("role_id = ? AND permission_id = ?", adminRole.ID, perm.ID).First(&existing)
@@ -92,12 +121,12 @@ func InitRBACData(db *gorm.DB) error {
 			}
 		}
 	}
-	
+
 	var userRole models.Role
 	if err := db.Where("name = ?", "user").First(&userRole).Error; err == nil {
 		var readPerms []models.Permission
 		db.Where("action = ?", "read").Find(&readPerms)
-		
+
 		for _, perm := range readPerms {
 			var existing models.RolePermission
 			result := db.Where("role_id = ? AND permission_id = ?", userRole.ID, perm.ID).First(&existing)
@@ -110,7 +139,7 @@ func InitRBACData(db *gorm.DB) error {
 			}
 		}
 	}
-	
+
 	log.Println("RBAC data initialization completed")
 	return nil
 }

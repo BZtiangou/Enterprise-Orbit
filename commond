@@ -1,0 +1,2 @@
+cd /root/enterprise-orbit/frontend && npm run dev -- --host 0.0.0.0 2>&1 &
+go run cmd/server/main.go 
