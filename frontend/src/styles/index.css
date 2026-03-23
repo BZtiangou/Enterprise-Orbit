@@ -164,11 +164,104 @@ html, body, #app {
   border: none !important;
   font-weight: 500 !important;
   transition: all var(--transition-normal) !important;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3) !important;
 }
 
 .el-button--primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px var(--color-accent-glow) !important;
+}
+
+.el-button--primary:active {
+  transform: translateY(0);
+}
+
+.el-button--success {
+  background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%) !important;
+  border: none !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-normal) !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
+.el-button--success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4) !important;
+}
+
+.el-button--warning {
+  background: linear-gradient(135deg, var(--color-warning) 0%, #d97706 100%) !important;
+  border: none !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-normal) !important;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3) !important;
+}
+
+.el-button--warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4) !important;
+}
+
+.el-button--danger {
+  background: linear-gradient(135deg, var(--color-danger) 0%, #dc2626 100%) !important;
+  border: none !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-normal) !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+.el-button--danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4) !important;
+}
+
+.el-button--info {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%) !important;
+  border: none !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-normal) !important;
+  box-shadow: 0 4px 15px rgba(71, 85, 105, 0.3) !important;
+}
+
+.el-button--info:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(71, 85, 105, 0.4) !important;
+}
+
+.el-button.is-link {
+  color: var(--color-accent) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.el-button.is-link:hover {
+  color: #22d3ee !important;
+  text-shadow: 0 0 10px var(--color-accent-glow);
+}
+
+.el-button.is-text {
+  color: var(--color-text-secondary) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.el-button.is-text:hover {
+  color: var(--color-accent) !important;
+  background: rgba(6, 182, 212, 0.1) !important;
+}
+
+.el-button {
+  background: var(--color-bg-tertiary) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.el-button:hover {
+  border-color: var(--color-accent) !important;
+  color: var(--color-accent) !important;
+  background: rgba(6, 182, 212, 0.1) !important;
 }
 
 .el-input__wrapper {
@@ -344,14 +437,50 @@ html, body, #app {
 
 .el-descriptions {
   --el-descriptions-item-bordered-label-background: var(--color-bg-tertiary) !important;
+  background: transparent !important;
+}
+
+.el-descriptions__body {
+  background: transparent !important;
+}
+
+.el-descriptions__table {
+  background: transparent !important;
 }
 
 .el-descriptions__label {
   color: var(--color-text-muted) !important;
+  background: transparent !important;
 }
 
 .el-descriptions__content {
   color: var(--color-text-primary) !important;
+  background: transparent !important;
+}
+
+.el-descriptions__cell {
+  background: transparent !important;
+}
+
+.el-tree {
+  background: transparent !important;
+  color: var(--color-text-primary) !important;
+}
+
+.el-tree-node__content {
+  background: transparent !important;
+}
+
+.el-tree-node__content:hover {
+  background: rgba(6, 182, 212, 0.1) !important;
+}
+
+.el-tree-node.is-current > .el-tree-node__content {
+  background: rgba(6, 182, 212, 0.15) !important;
+}
+
+.el-tree-node:focus > .el-tree-node__content {
+  background: rgba(6, 182, 212, 0.1) !important;
 }
 
 .el-timeline-item__timestamp {
@@ -364,4 +493,64 @@ html, body, #app {
 
 .el-timeline-item__node {
   background: var(--color-accent) !important;
+}
+
+.el-loading-mask {
+  background-color: rgba(10, 15, 28, 0.7) !important;
+  backdrop-filter: blur(4px);
+}
+
+.el-loading-spinner {
+  margin-top: 0 !important;
+}
+
+.el-loading-spinner .circular {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.el-loading-spinner .path {
+  stroke: var(--color-text-muted) !important;
+  stroke-width: 3 !important;
+}
+
+.el-loading-spinner .el-loading-text {
+  color: var(--color-text-muted) !important;
+  font-size: 13px !important;
+  margin-top: 8px !important;
+}
+
+.el-loading-spinner i {
+  color: var(--color-text-muted) !important;
+}
+
+.el-tabs__item {
+  color: var(--color-text-secondary) !important;
+}
+
+.el-tabs__item.is-active {
+  color: var(--color-accent) !important;
+}
+
+.el-tabs__active-bar {
+  background-color: var(--color-accent) !important;
+}
+
+.el-switch.is-checked .el-switch__core {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+
+.el-radio__input.is-checked + .el-radio__label {
+  color: var(--color-accent) !important;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
 }

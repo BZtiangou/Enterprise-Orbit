@@ -25,6 +25,18 @@ type Customer struct {
 	CooperationHistory []CooperationHistory `gorm:"foreignKey:CustomerID" json:"cooperation_history,omitempty"`
 	Contracts          []Contract          `gorm:"foreignKey:CustomerID" json:"contracts,omitempty"`
 	InteractionLogs    []InteractionLog    `gorm:"foreignKey:CustomerID" json:"interaction_logs,omitempty"`
+	UserCustomers      []UserCustomer      `gorm:"foreignKey:CustomerID" json:"user_customers,omitempty"`
+}
+
+type UserCustomer struct {
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	UserID     uint      `gorm:"not null;index" json:"user_id"`
+	CustomerID uint      `gorm:"not null;index" json:"customer_id"`
+	Relation   string    `gorm:"size:20;default:owner" json:"relation"`
+	CreatedAt  time.Time `json:"created_at"`
+
+	User     User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Customer Customer `gorm:"foreignKey:CustomerID" json:"customer,omitempty"`
 }
 
 type Contact struct {

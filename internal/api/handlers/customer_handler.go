@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -20,7 +21,7 @@ func NewCustomerHandler(db *gorm.DB) *CustomerHandler {
 }
 
 type CreateCustomerRequest struct {
-	CustomerCode string `json:"customer_code" binding:"required"`
+	CustomerCode string `json:"customer_code"`
 	CustomerName string `json:"customer_name" binding:"required"`
 	Industry     string `json:"industry"`
 	Scale        string `json:"scale"`
@@ -37,6 +38,22 @@ type UpdateCustomerRequest struct {
 	Address      string `json:"address"`
 	Website      string `json:"website"`
 	Status       string `json:"status"`
+}
+
+type AddCustomerByUserRequest struct {
+	CustomerName string `json:"customer_name" binding:"required"`
+	Industry     string `json:"industry"`
+	Scale        string `json:"scale"`
+	Region       string `json:"region"`
+	Address      string `json:"address"`
+	Website      string `json:"website"`
+}
+
+func (h *CustomerHandler) generateCustomerCode(userID uint) (string, error) {
+	var count int64
+	h.db.Model(&models.Customer{}).Where("created_by = ?", userID).Count(&count)
+	timestamp := time.Now().Format("20060102")
+	return fmt.Sprintf("CUS%d%s%03d", userID, timestamp, count+1), nil
 }
 
 func (h *CustomerHandler) GetCustomers(c *gin.Context) {
@@ -102,10 +119,18 @@ func (h *CustomerHandler) CreateCustomer(c *gin.Context) {
 		return
 	}
 
-	userID := c.GetUint("userID")
+	userID := c.GetUint("user_id")
+	if userID == 0 {
+		userID = c.GetUint("userID")
+	}
+
+	customerCode := req.CustomerCode
+	if customerCode == "" {
+		customerCode, _ = h.generateCustomerCode(userID)
+	}
 
 	customer := models.Customer{
-		CustomerCode: req.CustomerCode,
+		CustomerCode: customerCode,
 		CustomerName: req.CustomerName,
 		Industry:     req.Industry,
 		Scale:        req.Scale,
@@ -122,6 +147,53 @@ func (h *CustomerHandler) CreateCustomer(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create customer"})
 		return
 	}
+
+	c.JSON(http.StatusCreated, gin.H{"data": customer})
+}
+
+func (h *CustomerHandler) AddCustomerByUser(c *gin.Context) {
+	var req AddCustomerByUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	userID := c.GetUint("user_id")
+	if userID == 0 {
+		userID = c.GetUint("userID")
+	}
+
+	customerCode, _ := h.generateCustomerCode(userID)
+
+	customer := models.Customer{
+		CustomerCode: customerCode,
+		CustomerName: req.CustomerName,
+		Industry:     req.Industry,
+		Scale:        req.Scale,
+		Region:       req.Region,
+		Address:      req.Address,
+		Website:      req.Website,
+		Status:       "active",
+		CreatedBy:    userID,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	if err := h.db.Create(&customer).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create customer"})
+		return
+	}
+
+	var user models.User
+	h.db.First(&user, userID)
+
+	userCustomer := models.UserCustomer{
+		UserID:     userID,
+		CustomerID: customer.ID,
+		Relation:   "owner",
+		CreatedAt:  time.Now(),
+	}
+	h.db.Create(&userCustomer)
 
 	c.JSON(http.StatusCreated, gin.H{"data": customer})
 }

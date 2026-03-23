@@ -54,6 +54,12 @@
                 <span class="nav-text">{{ $t('nav.interactions') }}</span>
               </router-link>
             </li>
+            <li>
+              <router-link to="/ai-assistant" class="nav-item" :class="{ active: activeMenu === '/ai-assistant' }">
+                <el-icon class="nav-icon"><MagicStick /></el-icon>
+                <span class="nav-text">{{ $t('nav.aiAssistant') }}</span>
+              </router-link>
+            </li>
           </ul>
         </div>
         
@@ -127,7 +133,7 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '../stores/user'
-import { Odometer, User, Document, ChatDotRound, UserFilled, ArrowDown, Bell } from '@element-plus/icons-vue'
+import { Odometer, User, Document, ChatDotRound, UserFilled, ArrowDown, Bell, MagicStick } from '@element-plus/icons-vue'
 import LangSwitch from '../components/LangSwitch.vue'
 
 const { t } = useI18n()

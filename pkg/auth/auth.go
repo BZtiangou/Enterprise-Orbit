@@ -2,6 +2,8 @@ package auth
 
 import (
 	"errors"
+	"fmt"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -65,4 +67,10 @@ func GenerateToken(userID uint, username, email string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtSecret)
+}
+
+func GenerateAvatarFilename(userID uint, originalFilename string) string {
+	ext := filepath.Ext(originalFilename)
+	timestamp := time.Now().Unix()
+	return fmt.Sprintf("avatar_%d_%d%s", userID, timestamp, ext)
 }

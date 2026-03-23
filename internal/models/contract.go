@@ -34,6 +34,24 @@ type Contract struct {
 	ExpiryAlertSent bool       `gorm:"default:false" json:"expiry_alert_sent"`
 	CreatedAt       time.Time  `json:"created_at"`
 	UpdatedAt       time.Time  `json:"updated_at"`
+
+	Files []ContractFile `gorm:"foreignKey:ContractID" json:"files,omitempty"`
+}
+
+type ContractFile struct {
+	ID           uint      `gorm:"primaryKey" json:"id"`
+	ContractID   uint      `gorm:"not null;index" json:"contract_id"`
+	FileName     string    `gorm:"size:255;not null" json:"file_name"`
+	FilePath     string    `gorm:"size:500;not null" json:"file_path"`
+	FileSize     int64     `json:"file_size"`
+	FileType     string    `gorm:"size:50" json:"file_type"`
+	Category     string    `gorm:"size:50;default:contract" json:"category"`
+	Description  string    `gorm:"size:500" json:"description"`
+	UploadedBy   uint      `json:"uploaded_by"`
+	IsShared     bool      `gorm:"default:false" json:"is_shared"`
+	CreatedAt    time.Time `json:"created_at"`
+
+	Contract Contract `gorm:"foreignKey:ContractID" json:"contract,omitempty"`
 }
 
 type ContractContent struct {

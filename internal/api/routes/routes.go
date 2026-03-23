@@ -3,6 +3,7 @@ package routes
 import (
 	"enterprise-orbit/internal/api/handlers"
 	"enterprise-orbit/internal/middleware"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -22,9 +23,24 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 	r.POST("/auth/login", authHandler.Login)
 	r.POST("/auth/register", authHandler.Register)
 
+	apiKey := os.Getenv("QWEN_API_KEY")
+	if apiKey == "" {
+		apiKey = "sk-becaa107eb63439bb29c59b4bdb96178"
+	}
+	aiHandler := handlers.NewAIHandler(apiKey)
+
 	api := r.Group("/api")
 	api.Use(middleware.JWTAuth())
 	{
+		profileHandler := handlers.NewProfileHandler(db)
+		profileRoutes := api.Group("/profile")
+		{
+			profileRoutes.GET("", profileHandler.GetProfile)
+			profileRoutes.PUT("", profileHandler.UpdateProfile)
+			profileRoutes.POST("/change-password", profileHandler.ChangePassword)
+			profileRoutes.POST("/avatar", profileHandler.UploadAvatar)
+		}
+
 		userHandler := handlers.NewUserHandler(db)
 		userRoutes := api.Group("/users")
 		{
@@ -51,6 +67,7 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 			customerRoutes.GET("", middleware.RBAC("customer:read"), customerHandler.GetCustomers)
 			customerRoutes.GET("/:id", middleware.RBAC("customer:read"), customerHandler.GetCustomer)
 			customerRoutes.POST("", middleware.RBAC("customer:create"), customerHandler.CreateCustomer)
+			customerRoutes.POST("/by-user", middleware.RBAC("customer:create"), customerHandler.AddCustomerByUser)
 			customerRoutes.PUT("/:id", middleware.RBAC("customer:update"), customerHandler.UpdateCustomer)
 			customerRoutes.DELETE("/:id", middleware.RBAC("customer:delete"), customerHandler.DeleteCustomer)
 			customerRoutes.GET("/:id/health", middleware.RBAC("customer:read"), customerHandler.GetCustomerHealth)
@@ -70,6 +87,15 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 			contractRoutes.GET("/expiring", middleware.RBAC("contract:read"), contractHandler.GetExpiringContracts)
 			contractRoutes.GET("/:id/performance", middleware.RBAC("contract:read"), contractHandler.GetContractPerformance)
 			contractRoutes.POST("/:id/performance", middleware.RBAC("contract:update"), contractHandler.CreatePerformanceRecord)
+		}
+
+		fileHandler := handlers.NewFileHandler(db)
+		fileRoutes := api.Group("/contracts/:id/files")
+		{
+			fileRoutes.POST("", middleware.RBAC("contract:update"), fileHandler.UploadContractFile)
+			fileRoutes.GET("", middleware.RBAC("contract:read"), fileHandler.GetContractFiles)
+			fileRoutes.DELETE("/:file_id", middleware.RBAC("contract:update"), fileHandler.DeleteContractFile)
+			fileRoutes.PUT("/:file_id/share", middleware.RBAC("contract:update"), fileHandler.UpdateFileShareStatus)
 		}
 
 		interactionHandler := handlers.NewInteractionHandler(db)
@@ -95,5 +121,13 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 			dashboardRoutes.GET("/top-customers", middleware.RBAC("dashboard:read"), dashboardHandler.GetTopCustomers)
 			dashboardRoutes.GET("/recent-activities", middleware.RBAC("dashboard:read"), dashboardHandler.GetRecentActivities)
 		}
+
+		aiRoutes := api.Group("/ai")
+		{
+			aiRoutes.POST("/chat", aiHandler.Chat)
+			aiRoutes.POST("/chat/stream", aiHandler.ChatStream)
+		}
 	}
+
+	r.Static("/uploads", "./uploads")
 }

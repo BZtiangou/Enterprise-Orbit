@@ -51,10 +51,28 @@ const router = createRouter({
           meta: { title: '互动日志', icon: 'ChatDotRound' }
         },
         {
+          path: 'ai-assistant',
+          name: 'AIAssistant',
+          component: () => import('../views/ai/index.vue'),
+          meta: { title: 'AI助手', icon: 'MagicStick' }
+        },
+        {
           path: 'users',
           name: 'Users',
           component: () => import('../views/system/users.vue'),
           meta: { title: '用户管理', icon: 'UserFilled' }
+        },
+        {
+          path: 'profile',
+          name: 'Profile',
+          component: () => import('../views/profile/index.vue'),
+          meta: { title: '个人中心', hidden: true }
+        },
+        {
+          path: 'settings',
+          name: 'Settings',
+          component: () => import('../views/settings/index.vue'),
+          meta: { title: '系统设置', hidden: true }
         }
       ]
     }
